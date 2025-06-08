@@ -22,7 +22,7 @@ Content-Type: application/json
 }
 
 ### Supprimer une tâche
-DELETE http://localhost:3000/todos/1
+DELETE http://localhost:3000/todos/2
 
 ### Erreur : Créer une tâche sans titre
 POST http://localhost:3000/todos

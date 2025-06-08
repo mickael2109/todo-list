@@ -1,42 +1,59 @@
-let todos = [];
-let nextId = 1;
+import prisma from '../config/prismaClient.js';
 
-exports.createTodo = (req, res) => {
+export const createTodo = async (req, res) => {
   const { title } = req.body;
   if (!title) {
     return res.status(400).json({ error: "Le titre est requis" });
   }
-  const todo = { id: nextId++, title, completed: false };
-  todos.push(todo);
-  res.status(201).json(todo);
-};
-
-exports.getTodos = (req, res) => {
-  res.json(todos);
-};
-
-exports.getTodoById = (req, res) => {
-  const todo = todos.find((t) => t.id === parseInt(req.params.id));
-  if (!todo) {
-    return res.status(404).json({ error: "Tâche non trouvée" });
+  try {
+    const todo = await prisma.todo.create({
+      data: { title },
+    });
+    res.status(201).json(todo);
+  } catch (error) {
+    res.status(500).json({ error: "Erreur lors de la création" });
   }
-  res.json(todo);
 };
 
-exports.updateTodo = (req, res) => {
-  const todo = todos.find((t) => t.id === parseInt(req.params.id));
-  if (!todo) {
-    return res.status(404).json({ error: "Tâche non trouvée" });
+export const getTodos = async (req, res) => {
+  try {
+    const todos = await prisma.todo.findMany();
+    res.json(todos);
+  } catch (error) {
+    res.status(500).json({ error: "Erreur lors de la récupération" });
   }
-  Object.assign(todo, req.body);
-  res.json(todo);
 };
 
-exports.deleteTodo = (req, res) => {
-  const index = todos.findIndex((t) => t.id === parseInt(req.params.id));
-  if (index === -1) {
-    return res.status(404).json({ error: "Tâche non trouvée" });
+export const getTodoById = async (req, res) => {
+  const id = parseInt(req.params.id);
+  try {
+    const todo = await prisma.todo.findUnique({ where: { id } });
+    if (!todo) return res.status(404).json({ error: "Tâche non trouvée" });
+    res.json(todo);
+  } catch (error) {
+    res.status(500).json({ error: "Erreur lors de la récupération" });
   }
-  const todo = todos.splice(index, 1)[0];
-  res.json(todo);
+};
+
+export const updateTodo = async (req, res) => {
+  const id = parseInt(req.params.id);
+  try {
+    const todo = await prisma.todo.update({
+      where: { id },
+      data: req.body,
+    });
+    res.json(todo);
+  } catch (error) {
+    res.status(404).json({ error: "Tâche non trouvée ou erreur de mise à jour" });
+  }
+};
+
+export const deleteTodo = async (req, res) => {
+  const id = parseInt(req.params.id);
+  try {
+    const todo = await prisma.todo.delete({ where: { id } });
+    res.json(todo);
+  } catch (error) {
+    res.status(404).json({ error: "Tâche non trouvée ou erreur de suppression" });
+  }
 };
