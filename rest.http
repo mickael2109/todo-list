@@ -3,7 +3,7 @@ POST http://localhost:3000/todos
 Content-Type: application/json
 
 {
-  "title": "Acheter du pain"
+  "title": 1
 }
 
 ### Obtenir toutes les tâches

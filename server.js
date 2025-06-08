@@ -2,9 +2,11 @@ import express from 'express'
 import fs from 'fs'
 import { execSync } from 'child_process'
 import todoRouter from './router/todoRouter.js'
+import morgan from 'morgan';
 
 const app = express();
 app.use(express.json());
+app.use(morgan('dev'));
 
 // 📁 Chemin vers la base SQLite
 const DB_PATH = './prisma/dev.db';

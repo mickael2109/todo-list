@@ -9,11 +9,21 @@ export const createTodo = async (req, res) => {
     const todo = await prisma.todo.create({
       data: { title },
     });
-    res.status(201).json(todo);
+    res.status(201).json({
+      data : todo,
+      sucess: true
+    });
   } catch (error) {
-    res.status(500).json({ error: "Erreur lors de la création" });
+    console.error("Erreur lors de la création : ",error);
+    res.status(500).json({
+      message: "Erreur lors de la création",
+      erreur: error.message,
+      stack: error.stack,
+      sucess: false
+    });
   }
 };
+
 
 export const getTodos = async (req, res) => {
   try {
